@@ -1,0 +1,286 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/ALU.hdl
+
+/**
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x & y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out < 0) set ng = 1
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+   // Put you code here:
+	And16(a=x, b=x, out=xandx); //set all x to zero
+	Not16(in=xandx, out=xnandx);
+	And16(a=xandx, b=xnandx, out=allzerox);
+
+	And16(a=y, b=y, out=yandy); //set all y to zero
+	Not16(in=yandy, out=ynandy);
+	And16(a=yandy, b=ynandy, out=allzeroy);
+
+	Mux16(a=x, b=allzerox, sel=zx, out=w1); //Output zeros if zx/zy=1
+	Mux16(a=y, b=allzeroy, sel=zy, out=w2);
+	
+	
+	Not16(in=w1, out=notx16); //negate all x
+	Not16(in=w2, out=noty16);
+	
+	Mux16(a=w1, b=notx16, sel=nx, out=w3); //multiplex between x and !x
+	Mux16(a=w2, b=noty16, sel=ny, out=w4);
+
+	And16(a=w3, b=w4, out=w5); //Add or And
+	Add16(a=w3, b=w4, out=w6); 
+	Mux16(a=w5, b=w6, sel=f, out=w7); 
+	
+	Not16(in=w7, out=nout); //negate out of no=1
+	Mux16(a=w7, b=nout, sel=no, out=out);
+
+	Nand(a=x[0], b=x[0], out=nandx); //this will always output zero
+	And(a=x[0], b=x[0], out=andx);
+	And(a=nandx, b=andx, out=zero);
+
+	Mux(a=x[0], b=zero, sel=zx, out=x0);
+	Mux(a=x[1], b=zero, sel=zx, out=x1);
+	Mux(a=x[2], b=zero, sel=zx, out=x2);
+	Mux(a=x[3], b=zero, sel=zx, out=x3);
+	Mux(a=x[4], b=zero, sel=zx, out=x4);
+	Mux(a=x[5], b=zero, sel=zx, out=x5);
+	Mux(a=x[6], b=zero, sel=zx, out=x6);
+	Mux(a=x[7], b=zero, sel=zx, out=x7);
+	Mux(a=x[8], b=zero, sel=zx, out=x8);
+	Mux(a=x[9], b=zero, sel=zx, out=x9);
+	Mux(a=x[10], b=zero, sel=zx, out=x10);
+	Mux(a=x[11], b=zero, sel=zx, out=x11);
+	Mux(a=x[12], b=zero, sel=zx, out=x12);
+	Mux(a=x[13], b=zero, sel=zx, out=x13);
+	Mux(a=x[14], b=zero, sel=zx, out=x14);
+	Mux(a=x[15], b=zero, sel=zx, out=x15);
+	
+	Not(in=x0, out=notx0);
+	Not(in=x1, out=notx1);
+	Not(in=x2, out=notx2);
+	Not(in=x3, out=notx3);
+	Not(in=x4, out=notx4);
+	Not(in=x5, out=notx5);
+	Not(in=x6, out=notx6);
+	Not(in=x7, out=notx7);
+	Not(in=x8, out=notx8);
+	Not(in=x9, out=notx9);
+	Not(in=x10, out=notx10);
+	Not(in=x11, out=notx11);
+	Not(in=x12, out=notx12);
+	Not(in=x13, out=notx13);
+	Not(in=x14, out=notx14);
+	Not(in=x15, out=notx15);
+
+	Mux(a=x0, b=notx0, sel=nx, out=negx0);
+	Mux(a=x1, b=notx1, sel=nx, out=negx1);
+	Mux(a=x2, b=notx2, sel=nx, out=negx2);
+	Mux(a=x3, b=notx3, sel=nx, out=negx3);
+	Mux(a=x4, b=notx4, sel=nx, out=negx4);
+	Mux(a=x5, b=notx5, sel=nx, out=negx5);
+	Mux(a=x6, b=notx6, sel=nx, out=negx6);
+	Mux(a=x7, b=notx7, sel=nx, out=negx7);
+	Mux(a=x8, b=notx8, sel=nx, out=negx8);
+	Mux(a=x9, b=notx9, sel=nx, out=negx9);
+	Mux(a=x10, b=notx10, sel=nx, out=negx10);
+	Mux(a=x11, b=notx11, sel=nx, out=negx11);
+	Mux(a=x12, b=notx12, sel=nx, out=negx12);
+	Mux(a=x13, b=notx13, sel=nx, out=negx13);
+	Mux(a=x14, b=notx14, sel=nx, out=negx14);
+	Mux(a=x15, b=notx15, sel=nx, out=negx15);
+
+	Mux(a=y[0], b=zero, sel=zy, out=y0);
+	Mux(a=y[1], b=zero, sel=zy, out=y1);
+	Mux(a=y[2], b=zero, sel=zy, out=y2);
+	Mux(a=y[3], b=zero, sel=zy, out=y3);
+	Mux(a=y[4], b=zero, sel=zy, out=y4);
+	Mux(a=y[5], b=zero, sel=zy, out=y5);
+	Mux(a=y[6], b=zero, sel=zy, out=y6);
+	Mux(a=y[7], b=zero, sel=zy, out=y7);
+	Mux(a=y[8], b=zero, sel=zy, out=y8);
+	Mux(a=y[9], b=zero, sel=zy, out=y9);
+	Mux(a=y[10], b=zero, sel=zy, out=y10);
+	Mux(a=y[11], b=zero, sel=zy, out=y11);
+	Mux(a=y[12], b=zero, sel=zy, out=y12);
+	Mux(a=y[13], b=zero, sel=zy, out=y13);
+	Mux(a=y[14], b=zero, sel=zy, out=y14);
+	Mux(a=y[15], b=zero, sel=zy, out=y15);
+
+	Not(in=y0, out=noty0);
+	Not(in=y1, out=noty1);
+	Not(in=y2, out=noty2);
+	Not(in=y3, out=noty3);
+	Not(in=y4, out=noty4);
+	Not(in=y5, out=noty5);
+	Not(in=y6, out=noty6);
+	Not(in=y7, out=noty7);
+	Not(in=y8, out=noty8);
+	Not(in=y9, out=noty9);
+	Not(in=y10, out=noty10);
+	Not(in=y11, out=noty11);
+	Not(in=y12, out=noty12);
+	Not(in=y13, out=noty13);
+	Not(in=y14, out=noty14);
+	Not(in=y15, out=noty15);
+
+	Mux(a=y0, b=noty0, sel=ny, out=negy0);
+	Mux(a=y1, b=noty1, sel=ny, out=negy1);
+	Mux(a=y2, b=noty2, sel=ny, out=negy2);
+	Mux(a=y3, b=noty3, sel=ny, out=negy3);
+	Mux(a=y4, b=noty4, sel=ny, out=negy4);
+	Mux(a=y5, b=noty5, sel=ny, out=negy5);
+	Mux(a=y6, b=noty6, sel=ny, out=negy6);
+	Mux(a=y7, b=noty7, sel=ny, out=negy7);
+	Mux(a=y8, b=noty8, sel=ny, out=negy8);
+	Mux(a=y9, b=noty9, sel=ny, out=negy9);
+	Mux(a=y10, b=noty10, sel=ny, out=negy10);
+	Mux(a=y11, b=noty11, sel=ny, out=negy11);
+	Mux(a=y12, b=noty12, sel=ny, out=negy12);
+	Mux(a=y13, b=noty13, sel=ny, out=negy13);
+	Mux(a=y14, b=noty14, sel=ny, out=negy14);
+	Mux(a=y15, b=noty15, sel=ny, out=negy15);
+
+	HalfAdder(a=negx0, b=negy0, sum=s1, carry=c1);
+	FullAdder(a=negx1, b=negy1, c=c1, sum=s2, carry=c2);
+	FullAdder(a=negx2, b=negy2, c=c2, sum=s3, carry=c3);
+	FullAdder(a=negx3, b=negy3, c=c3, sum=s4, carry=c4);
+	FullAdder(a=negx4, b=negy4, c=c4, sum=s5, carry=c5);
+	FullAdder(a=negx5, b=negy5, c=c5, sum=s6, carry=c6);
+	FullAdder(a=negx6, b=negy6, c=c6, sum=s7, carry=c7);
+	FullAdder(a=negx7, b=negy7, c=c7, sum=s8, carry=c8);
+	FullAdder(a=negx8, b=negy8, c=c8, sum=s9, carry=c9);
+	FullAdder(a=negx9, b=negy9, c=c9, sum=s10, carry=c10);
+	FullAdder(a=negx10, b=negy10, c=c10, sum=s11, carry=c11);
+	FullAdder(a=negx11, b=negy11, c=c11, sum=s12, carry=c12);
+	FullAdder(a=negx12, b=negy12, c=c12, sum=s13, carry=c13);
+	FullAdder(a=negx13, b=negy13, c=c13, sum=s14, carry=c14);
+	FullAdder(a=negx14, b=negy14, c=c14, sum=s15, carry=c15);
+	FullAdder(a=negx15, b=negy15, c=c15, sum=s16, carry=c16);
+	
+	And(a=negx0, b=negy0, out=and1);
+	And(a=negx1, b=negy1, out=and2);
+	And(a=negx2, b=negy2, out=and3);
+	And(a=negx3, b=negy3, out=and4);
+	And(a=negx4, b=negy4, out=and5);
+	And(a=negx5, b=negy5, out=and6);
+	And(a=negx6, b=negy6, out=and7);
+	And(a=negx7, b=negy7, out=and8);
+	And(a=negx8, b=negy8, out=and9);
+	And(a=negx9, b=negy9, out=and10);
+	And(a=negx10, b=negy10, out=and11);
+	And(a=negx11, b=negy11, out=and12);
+	And(a=negx12, b=negy12, out=and13);
+	And(a=negx13, b=negy13, out=and14);
+	And(a=negx14, b=negy14, out=and15);
+	And(a=negx15, b=negy15, out=and16);
+
+	Mux(a=and1, b=s1, sel=f, out=num1);
+	Mux(a=and2, b=s2, sel=f, out=num2);
+	Mux(a=and3, b=s3, sel=f, out=num3);
+	Mux(a=and4, b=s4, sel=f, out=num4);
+	Mux(a=and5, b=s5, sel=f, out=num5);
+	Mux(a=and6, b=s6, sel=f, out=num6);
+	Mux(a=and7, b=s7, sel=f, out=num7);
+	Mux(a=and8, b=s8, sel=f, out=num8);
+	Mux(a=and9, b=s9, sel=f, out=num9);
+	Mux(a=and10, b=s10, sel=f, out=num10);
+	Mux(a=and11, b=s11, sel=f, out=num11);
+	Mux(a=and12, b=s12, sel=f, out=num12);
+	Mux(a=and13, b=s13, sel=f, out=num13);
+	Mux(a=and14, b=s14, sel=f, out=num14);
+	Mux(a=and15, b=s15, sel=f, out=num15);
+	Mux(a=and16, b=s16, sel=f, out=num16);
+	
+	Not(in=num1, out=notnum1);
+	Not(in=num2, out=notnum2);
+	Not(in=num3, out=notnum3);
+	Not(in=num4, out=notnum4);
+	Not(in=num5, out=notnum5);
+	Not(in=num6, out=notnum6);
+	Not(in=num7, out=notnum7);
+	Not(in=num8, out=notnum8);
+	Not(in=num9, out=notnum9);
+	Not(in=num10, out=notnum10);
+	Not(in=num11, out=notnum11);
+	Not(in=num12, out=notnum12);
+	Not(in=num13, out=notnum13);
+	Not(in=num14, out=notnum14);
+	Not(in=num15, out=notnum15);
+	Not(in=num16, out=notnum16);
+
+	Mux(a=num1, b=notnum1, sel=no, out=finnum1);
+	Mux(a=num2, b=notnum2, sel=no, out=finnum2);
+	Mux(a=num3, b=notnum3, sel=no, out=finnum3);
+	Mux(a=num4, b=notnum4, sel=no, out=finnum4);
+	Mux(a=num5, b=notnum5, sel=no, out=finnum5);
+	Mux(a=num6, b=notnum6, sel=no, out=finnum6);
+	Mux(a=num7, b=notnum7, sel=no, out=finnum7);
+	Mux(a=num8, b=notnum8, sel=no, out=finnum8);
+	Mux(a=num9, b=notnum9, sel=no, out=finnum9);
+	Mux(a=num10, b=notnum10, sel=no, out=finnum10);
+	Mux(a=num11, b=notnum11, sel=no, out=finnum11);
+	Mux(a=num12, b=notnum12, sel=no, out=finnum12);
+	Mux(a=num13, b=notnum13, sel=no, out=finnum13);
+	Mux(a=num14, b=notnum14, sel=no, out=finnum14);
+	Mux(a=num15, b=notnum15, sel=no, out=finnum15);
+	Mux(a=num16, b=notnum16, sel=no, out=finnum16);
+
+	And(a=finnum16, b=finnum16, out=ng);
+
+	Or(a=finnum1, b=finnum2, out=or1);
+	Or(a=finnum3, b=finnum4, out=or2);
+	Or(a=finnum5, b=finnum6, out=or3);
+	Or(a=finnum7, b=finnum8, out=or4);
+	Or(a=finnum9, b=finnum10, out=or5);
+	Or(a=finnum11, b=finnum12, out=or6);
+	Or(a=finnum13, b=finnum14, out=or7);
+	Or(a=finnum15, b=finnum16, out=or8);
+
+	Or(a=or1, b=or2, out=or9);
+	Or(a=or3, b=or4, out=or10);
+	Or(a=or5, b=or6, out=or11);
+	Or(a=or7, b=or8, out=or12);
+
+	Or(a=or9, b=or10, out=or13);
+	Or(a=or11, b=or12, out=or14);
+
+	Or(a=or13, b=or14, out=or15);
+	Not(in=or15, out=nor15);
+	Not(in=finnum1, out=notfinnum1);
+	And(a=nor15, b= notfinnum1, out=zr);	
+
+}
