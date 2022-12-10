@@ -1,12 +1,12 @@
 # HACK-Hardware-Platform
 
-This repository contains my implementations of all simulated 
-hardware components forming the HACK computer, including a CPU, 
-RAM, and Program Counter, constructed from elementary logic gates.
+###This repository contains my implementations of all simulated 
+###hardware components forming the HACK computer, including a CPU, 
+###RAM, and Program Counter, constructed from elementary logic gates.
 
-The HardwareSimulator.sh application, as well as the .tst and
-.cmp files located in the directories numbered 01-05 are necessary
-to test the functionality of the HDL chip implementations.
+###The HardwareSimulator.sh application, as well as the .tst and
+###.cmp files located in the directories numbered 01-05 are necessary
+###to test the functionality of the HDL chip implementations.
 
 ## Folder contents:
 01 - Contains the chip implementations of Not, And, Mux, DMux, and their multi-bit counterparts.
