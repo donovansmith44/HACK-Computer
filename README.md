@@ -15,5 +15,5 @@ The HardwareSimulator.sh application, as well as the .tst and .cmp files located
 
 #### 04 - Contains my 'Fill' and 'Mult' program implementations in the HACK assembly language.
 
-#### 05 - Contains the HACK Computer, which integrates the CPU, Program Counter, and Memory into a cohesive, functional unit.
+#### 05 - Contains the HACK Computer, which integrates the CPU, Program Counter, I/O Devices, and Memory into a cohesive, functional unit.
 
