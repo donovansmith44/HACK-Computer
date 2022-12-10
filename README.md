@@ -4,7 +4,7 @@ This repository contains my implementations of all simulated hardware components
 
 The HardwareSimulator.sh application, as well as the .tst and .cmp files located in the directories numbered 01-05 are necessary to test the functionality of the HDL chip implementations.
 
-## Folder contents:
+## Repository subfolder contents:
 01 - Contains the chip implementations of Not, And, Mux, DMux, and their multi-bit counterparts.
 
 02 - Contains the chip implementations of arithmetic logic unit (ALU) and its constituent chips.
