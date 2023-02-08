@@ -17,3 +17,5 @@ The HardwareSimulator.sh application, as well as the .tst and .cmp files located
 
 #### 05 - Contains the HACK Computer, which integrates the CPU, Program Counter, I/O Devices, and Memory into a cohesive, functional unit.
 
+#### 06 - Contains the HACK Assembler, which translates a simple assembly commands into binary instructions to be interpreted by the HACK CPU.
+
